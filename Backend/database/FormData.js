@@ -19,7 +19,7 @@ const upload = multer({
     }
 }).single('resume');
 
-// ✅ POST: Save applicant info with resume upload
+//  POST: Save applicant info with resume upload
 const postInfo = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
@@ -49,7 +49,7 @@ const postInfo = async (req, res) => {
     });
 };
 
-// ✅ GET: All applicants info (without resume buffer)
+//  GET: All applicants info (without resume buffer)
 const getAllInfo = async (req, res) => {
     try {
         const sql = `SELECT id, name, phone, email FROM applicants ORDER BY id DESC`;
