@@ -1,6 +1,8 @@
+
+
 const express = require('express');
 const cors = require('cors');
-const { postInfo, getAllInfo, getResumeById } = require('./database/FormData');
+const { postInfo, getAllInfo, getResumeById, updateApplicant, getApplicantById } = require('./database/FormData');
 
 const app = express();
 const port = 5000;
@@ -8,7 +10,7 @@ const port = 5000;
 // ------------------- Middleware -------------------
 app.use(express.json());
 app.use(cors({
-    origin: 'https://visits.vocalheart.com', // Adjust if frontend is hosted elsewhere
+    origin: ['http://localhost:5173', 'https://visits.vocalheart.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 }));
@@ -21,8 +23,14 @@ app.post('/api/applicants', postInfo);
 // GET all applicant info (no resumes included)
 app.get('/api/applicants', getAllInfo);
 
-// GET specific resume (by applicant ID)
+// GET specific applicant by ID
+app.get('/api/applicants/:id', getApplicantById);
+
+// GET specific resume by applicant ID
 app.get('/api/resume/:id', getResumeById);
+
+// PUT update applicant status and reviewed flag
+app.put('/api/applicants/:id', updateApplicant);
 
 // ------------------- Server Start -------------------
 app.listen(port, () => {
