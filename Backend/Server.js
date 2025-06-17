@@ -1,21 +1,30 @@
 const express = require('express');
-const cors = require('cors'); // Import cors
-const { postInfo } = require('./database/FormData');
+const cors = require('cors');
+const { postInfo, getAllInfo, getResumeById } = require('./database/FormData');
 
 const app = express();
 const port = 5000;
 
-// Middleware to parse JSON and enable CORS
+// ------------------- Middleware -------------------
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', "https://effervescent-creponne-5a6388.netlify.app", "https://visits.vocalheart.com"],
-    methods: ['GET', 'POST'],
+    origin: 'http://localhost:5173', // Adjust if frontend is hosted elsewhere
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 }));
 
-// Route for form submission
+// ------------------- Routes -------------------
+
+// POST applicant info with resume upload
 app.post('/api/applicants', postInfo);
 
+// GET all applicant info (no resumes included)
+app.get('/api/applicants', getAllInfo);
+
+// GET specific resume (by applicant ID)
+app.get('/api/resume/:id', getResumeById);
+
+// ------------------- Server Start -------------------
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Server is running at http://localhost:${port}`);
 });
