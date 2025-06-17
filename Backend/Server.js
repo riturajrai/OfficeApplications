@@ -8,7 +8,7 @@ const port = 5000;
 // ------------------- Middleware -------------------
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // Adjust if frontend is hosted elsewhere
+    origin: 'https://visits.vocalheart.com', // Adjust if frontend is hosted elsewhere
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 }));
