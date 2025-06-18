@@ -10,7 +10,7 @@ const port = 5000;
 // ------------------- Middleware -------------------
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://visits.vocalheart.com','https://effervescent-creponne-5a6388.netlify.app'],
+    origin: ['http://localhost:5173','http://localhost:5174', 'https://visits.vocalheart.com','https://effervescent-creponne-5a6388.netlify.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type'],
 }));
