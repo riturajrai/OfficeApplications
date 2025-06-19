@@ -25,7 +25,11 @@ const upload = multer({
 const postInfo = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      console.error('Multer Error:', err.message);
+      console.error('Multer Error:', {
+        message: err.message,
+        field: err.field || 'unknown',
+        timestamp: new Date().toISOString(),
+      });
       return res.status(400).json({
         error: 'File upload failed',
         details: err.message,
@@ -33,23 +37,49 @@ const postInfo = async (req, res) => {
       });
     }
 
+    // Extract and sanitize inputs
     const { name, phone, email, applicationType, reason, status = 'pending' } = req.body;
     const resume = req.file ? req.file.buffer : null;
 
+    // Sanitize inputs to prevent injection
+    const sanitizedName = sanitize(name).trim().escape();
+    const sanitizedPhone = phone ? sanitize(phone).trim().escape() : null;
+    const sanitizedEmail = sanitize(email).trim().toLowerCase();
+    const sanitizedReason = reason ? sanitize(reason).trim().escape() : null;
+    const sanitizedApplicationType = sanitize(applicationType).trim().toLowerCase();
+
     // Validate required fields
-    if (!name || !email || !applicationType) {
+    if (!sanitizedName || !sanitizedEmail || !sanitizedApplicationType) {
       return res.status(400).json({
         error: 'Validation error',
         missingFields: {
-          name: !name,
-          email: !email,
-          applicationType: !applicationType,
+          name: !sanitizedName,
+          email: !sanitizedEmail,
+          applicationType: !sanitizedApplicationType,
         },
         uiMessage: 'Please fill all required fields: Name, Email, and Application Type',
       });
     }
 
-    if (applicationType === 'interview' && !resume) {
+    // Validate email format
+    if (!validator.isEmail(sanitizedEmail)) {
+      return res.status(400).json({
+        error: 'Validation error',
+        details: 'Invalid email format',
+        uiMessage: 'Please provide a valid email address',
+      });
+    }
+
+    // Validate phone format if provided
+    if (sanitizedPhone && !validator.isMobilePhone(sanitizedPhone, 'any')) {
+      return res.status(400).json({
+        error: 'Validation error',
+        details: 'Invalid phone number format',
+        uiMessage: 'Please provide a valid phone number',
+      });
+    }
+
+    if (sanitizedApplicationType === 'interview' && !resume) {
       return res.status(400).json({
         error: 'Validation error',
         missingFields: { resume: true },
@@ -57,7 +87,7 @@ const postInfo = async (req, res) => {
       });
     }
 
-    if (applicationType === 'reason' && !reason) {
+    if (sanitizedApplicationType === 'reason' && !sanitizedReason) {
       return res.status(400).json({
         error: 'Validation error',
         missingFields: { reason: true },
@@ -65,7 +95,7 @@ const postInfo = async (req, res) => {
       });
     }
 
-    if (applicationType !== 'interview' && applicationType !== 'reason') {
+    if (sanitizedApplicationType !== 'interview' && sanitizedApplicationType !== 'reason') {
       return res.status(400).json({
         error: 'Invalid application type',
         uiMessage: 'Application type must be either "interview" or "reason"',
@@ -73,34 +103,44 @@ const postInfo = async (req, res) => {
     }
 
     try {
-      // Save to database (no email uniqueness check)
+      // Save to database with parameterized query
       const query =
         'INSERT INTO applicants (name, phone, email, resume, reason, application_type, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-      const values = [name, phone, email, resume, reason, applicationType, status, new Date()];
-      await database.query(query, values);
+      const values = [
+        sanitizedName,
+        sanitizedPhone,
+        sanitizedEmail,
+        resume,
+        sanitizedReason,
+        sanitizedApplicationType,
+        status,
+        new Date(),
+      ];
+      const [result] = await database.query(query, values);
+      const applicationId = result.insertId;
 
       // Email templates based on application type
       const emailSubject =
-        applicationType === 'interview'
+        sanitizedApplicationType === 'interview'
           ? 'Job Application Received - Interview Request'
           : 'Reason for Visit Submission Received';
 
       const emailBody =
-        applicationType === 'interview'
+        sanitizedApplicationType === 'interview'
           ? `
               <p>Thank you for applying for a position at <span class="highlight">VocalHeart Infotech Pvt. Ltd.</span>. We have successfully received your job application and resume.</p>
               <div class="divider"></div>
               <p><strong>Application Review</strong><br>
               Our HR team will review your resume and qualifications within the next 1-2 business days.</p>
               <p><strong>Next Steps</strong><br>
-              If your profile aligns with our requirements, we will contact you via email or phone to schedule an interview. You can also check our <a href="https://vocalheart.com/careers" style="color: #003087;">careers page</a> for updates on open positions.</p>
+              If your profile aligns with our requirements, we will contact you via email or phone to schedule an interview. You can also check our <a href="https://vocalheart.com/careers" style="color: #db2777;">careers page</a> for updates on open positions.</p>
               <p>We appreciate your interest in joining our team!</p>
             `
           : `
               <p>Thank you for submitting your reason for visiting <span class="highlight">VocalHeart Infotech Pvt. Ltd.</span>. We have successfully received your submission.</p>
               <div class="divider"></div>
               <p><strong>Submission Details</strong><br>
-              Reason: ${reason}</p>
+              Reason: ${sanitizedReason}</p>
               <p><strong>Next Steps</strong><br>
               Our team will review your submission within 1-2 business days. If further action or follow-up is required, we will reach out to you via email or phone.</p>
               <p>We value your engagement with us!</p>
@@ -108,7 +148,7 @@ const postInfo = async (req, res) => {
 
       const mailOptions = {
         from: '"VocalHeart Infotech Pvt. Ltd." <careers@vocalheart.com>',
-        to: email,
+        to: sanitizedEmail,
         subject: emailSubject,
         html: `
           <!DOCTYPE html>
@@ -117,7 +157,7 @@ const postInfo = async (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${
-              applicationType === 'interview'
+              sanitizedApplicationType === 'interview'
                 ? 'Job Application Confirmation'
                 : 'Reason Submission Confirmation'
             }</title>
@@ -130,7 +170,7 @@ const postInfo = async (req, res) => {
               body {
                 font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 font-size: 12px;
-                line-height: 1.5;
+                line-height: 1.6;
                 color: #333;
                 background-color: #f8f9fa;
                 -webkit-font-smoothing: antialiased;
@@ -147,7 +187,7 @@ const postInfo = async (req, res) => {
                 background: white;
                 padding: 24px;
                 text-align: center;
-                border-bottom: 4px solid #ff6b35;
+                border-bottom: 4px solid #db2777;
               }
               .logo {
                 max-width: 180px;
@@ -159,7 +199,7 @@ const postInfo = async (req, res) => {
               .greeting {
                 font-size: 14px;
                 font-weight: 600;
-                color: #003087;
+                color: #db2777;
                 margin-bottom: 16px;
               }
               .divider {
@@ -179,7 +219,7 @@ const postInfo = async (req, res) => {
                 font-size: 12px;
               }
               .highlight {
-                color: #003087;
+                color: #db2777;
                 font-weight: 500;
               }
               .cta-container {
@@ -189,7 +229,7 @@ const postInfo = async (req, res) => {
               .cta-button {
                 display: inline-block;
                 padding: 10px 24px;
-                background: #ff6b35;
+                background: #db2777;
                 color: white !important;
                 text-decoration: none;
                 border-radius: 4px;
@@ -198,7 +238,7 @@ const postInfo = async (req, res) => {
                 transition: all 0.2s ease;
               }
               .cta-button:hover {
-                background: #e85925;
+                background: #be185d;
                 transform: translateY(-1px);
               }
               .email-footer {
@@ -225,7 +265,7 @@ const postInfo = async (req, res) => {
                 opacity: 1;
               }
               .footer-link {
-                color: #003087;
+                color: #db2777;
                 text-decoration: none;
                 margin: 0 5px;
               }
@@ -252,21 +292,21 @@ const postInfo = async (req, res) => {
                      alt="VocalHeart Infotech" class="logo">
               </div>
               <div class="email-body">
-                <p class="greeting">Dear ${name},</p>
+                <p class="greeting">Dear ${sanitizedName},</p>
                 <h1>${
-                  applicationType === 'interview'
+                  sanitizedApplicationType === 'interview'
                     ? 'Thank You for Your Job Application!'
                     : 'Thank You for Your Submission!'
                 }</h1>
                 ${emailBody}
                 <div class="cta-container">
                   <a href="https://vocalheart.com${
-                    applicationType === 'interview' ? '/careers' : ''
+                    sanitizedApplicationType === 'interview' ? '/careers' : ''
                   }" class="cta-button">
-                    ${applicationType === 'interview' ? 'View Current Openings' : 'Visit Our Website'}
+                    ${sanitizedApplicationType === 'interview' ? 'View Current Openings' : 'Visit Our Website'}
                   </a>
                 </div>
-                <p>For any questions, please reply to this email or contact our team at <a href="mailto:info@vocalheart.com" style="color: #003087;">info@vocalheart.com</a>.</p>
+                <p>For any questions, please reply to this email or contact our team at <a href="mailto:info@vocalheart.com" style="color: #db2777;">info@vocalheart.com</a>.</p>
                 <p>Best regards,<br>
                 <strong>The VocalHeart Team</strong></p>
               </div>
@@ -291,7 +331,7 @@ const postInfo = async (req, res) => {
                 </p>
                 <p style="margin-top: 12px; color: #adb5bd;">
                   © ${new Date().getFullYear()} VocalHeart Infotech. All rights reserved.<br>
-                  This email was sent to ${email} as part of your submission process.
+                  This email was sent to ${sanitizedEmail} as part of your submission process.
                 </p>
               </div>
             </div>
@@ -302,36 +342,52 @@ const postInfo = async (req, res) => {
 
       // Send email (non-blocking)
       transporter.sendMail(mailOptions)
-        .then((info) => console.log('Email sent:', info.messageId))
-        .catch((err) => console.error('Email error:', err));
+        .then((info) => console.log('Email sent:', {
+          messageId: info.messageId,
+          to: sanitizedEmail,
+          subject: emailSubject,
+          timestamp: new Date().toISOString(),
+        }))
+        .catch((err) => console.error('Email error:', {
+          message: err.message,
+          to: sanitizedEmail,
+          subject: emailSubject,
+          timestamp: new Date().toISOString(),
+        }));
 
       // Success response
       res.status(201).json({
         success: true,
         message:
-          applicationType === 'interview'
+          sanitizedApplicationType === 'interview'
             ? 'Application submitted successfully!'
             : 'Reason submitted successfully!',
-        nextSteps: 'Our team will review your submission and contact you soon.',
-        reference: {
-          email: email,
+        data: {
+          applicationId,
+          email: sanitizedEmail,
+          applicationType: sanitizedApplicationType,
           timestamp: new Date().toISOString(),
         },
         uiMessage:
-          applicationType === 'interview'
-            ? 'Thank you! Your application has been submitted successfully.'
-            : 'Thank you! Your reason has been submitted successfully.',
+          sanitizedApplicationType === 'interview'
+            ? 'Thank you! Your application has been submitted successfully. Check your email for confirmation.'
+            : 'Thank you! Your reason has been submitted successfully. Check your email for confirmation.',
       });
     } catch (err) {
-      console.error('Database Error:', err.message);
+      console.error('Database Error:', {
+        message: err.message,
+        query: 'INSERT INTO applicants',
+        timestamp: new Date().toISOString(),
+      });
       res.status(500).json({
         error: 'Internal server error',
         details: err.message,
-        uiMessage: 'We encountered an error. Please try again or contact support.',
+        uiMessage: 'We encountered an error while processing your request. Please try again or contact support at info@vocalheart.com.',
       });
     }
   });
 };
+
 
 // GET: All applicants info with IST timestamps
 const getAllInfo = async (req, res) => {
