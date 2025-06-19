@@ -2,13 +2,14 @@ const database = require('../database/mysql');
 const multer = require('multer');
 const path = require('path');
 const moment = require('moment-timezone');
-const transporter = require('../database/Nodemailer'); // import nodemailer config
+const transporter = require('../database/Nodemailer'); 
+
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const filetypes = /pdf|doc|docx/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -28,7 +29,7 @@ const postInfo = async (req, res) => {
             return res.status(400).json({ 
                 error: 'File upload failed',
                 details: err.message,
-                uiMessage: '⚠️ Please upload a valid file (PDF/DOCX under 5MB)'
+                uiMessage: 'Please upload a valid file (PDF/DOCX under 5MB)'
             });
         }
 
@@ -43,7 +44,7 @@ const postInfo = async (req, res) => {
                     email: !email,
                     resume: !resume
                 },
-                uiMessage: '🔍 Please fill all required fields: Name, Email, and Resume'
+                uiMessage: 'Please fill all required fields: Name, Email, and Resume'
             });
         }
 
@@ -285,19 +286,19 @@ const postInfo = async (req, res) => {
                     email: email,
                     timestamp: new Date().toISOString()
                 },
-                uiMessage: '🎉 Thank you! Your application has been submitted successfully.'
+                uiMessage: 'Thank you! Your application has been submitted successfully.'
             });
         } catch (err) {
             console.error('Database Error:', err.message);
             res.status(500).json({ 
                 error: 'Internal server error',
                 details: err.message,
-                uiMessage: '⚠️ We encountered an error. Please try again or contact support.'
+                uiMessage: 'We encountered an error. Please try again or contact support.'
             });
         }
     });
 };
-// ✅ GET: All applicants info with IST timestamps
+// GET: All applicants info with IST timestamps
 const getAllInfo = async (req, res) => {
     try {
         const sql = `SELECT id, name, phone, email, status, reviewed, created_at, updated_at FROM applicants ORDER BY id DESC`;
@@ -319,7 +320,7 @@ const getAllInfo = async (req, res) => {
     }
 };
 
-// ✅ GET: Resume file by ID
+// GET: Resume file by ID
 const getResumeById = async (req, res) => {
     const { id } = req.params;
     try {
@@ -330,7 +331,7 @@ const getResumeById = async (req, res) => {
             return res.status(404).json({ message: 'Resume not found' });
         }
 
-        res.setHeader('Content-Type', 'application/pdf'); // Adjust MIME if needed
+        res.setHeader('Content-Type', 'application/pdf'); 
         res.send(rows[0].resume);
     } catch (error) {
         console.error('Resume Fetch Error:', error);
@@ -338,7 +339,7 @@ const getResumeById = async (req, res) => {
     }
 };
 
-// ✅ PUT: Update status/reviewed
+//  PUT: Update status/reviewed
 const updateApplicant = async (req, res) => {
     const { id } = req.params;
     const { status, reviewed } = req.body;
@@ -370,7 +371,7 @@ const updateApplicant = async (req, res) => {
     }
 };
 
-// ✅ GET: Single applicant info
+// GET: Single applicant info
 const getApplicantById = async (req, res) => {
     const { id } = req.params;
     try {
