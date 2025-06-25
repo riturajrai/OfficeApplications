@@ -8,9 +8,9 @@ const transporter = require('../database/Nodemailer');
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (!file) return cb(null, true); // Allow submissions without a file
+    if (!file) return cb(null, true);
     const filetypes = /pdf|doc|docx/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
@@ -22,6 +22,8 @@ const upload = multer({
   },
 }).single('resume');
 
+
+// ===================== postInfo routes ===========================================\\
 const postInfo = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
@@ -32,10 +34,9 @@ const postInfo = async (req, res) => {
         uiMessage: 'Please upload a valid file (PDF/DOC/DOCX under 10MB)',
       });
     }
-
     const { name, phone, email, applicationType, reason, status = 'pending' } = req.body;
     const resume = req.file ? req.file.buffer : null;
-
+  
     // Validate required fields
     if (!name || !email || !applicationType) {
       return res.status(400).json({
@@ -48,7 +49,7 @@ const postInfo = async (req, res) => {
         uiMessage: 'Please fill all required fields: Name, Email, and Application Type',
       });
     }
-
+  
     if (applicationType === 'interview' && !resume) {
       return res.status(400).json({
         error: 'Validation error',
@@ -394,7 +395,7 @@ const getReasonById = async (req, res) => {
     if (rows[0].application_type !== 'reason' || !rows[0].reason) {
       return res.status(404).json({ message: 'No reason available for this submission' });
     }
-
+    
     res.status(200).json({
       message: 'Reason fetched successfully',
       reason: rows[0].reason,
