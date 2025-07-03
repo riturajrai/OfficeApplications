@@ -51,7 +51,6 @@ router.post('/signup', async (req, res) => {
       message: 'Password must be at least 6 characters long',
     });
   }
-
   try {
     const sanitizedName = validator.escape(name.trim());
     const sanitizedEmail = validator.normalizeEmail(email);
@@ -344,15 +343,14 @@ router.post('/forgot-password', async (req, res) => {
 
 // Verify OTP Route
 router.post('/verify-otp', async (req, res) => {
+  
   const { email, otp } = req.body;
-
   if (!email || !otp) {
     return res.status(400).json({
       error: 'Validation failed',
       message: 'Email and OTP are required',
     });
   }
-
   try {
     const sanitizedEmail = validator.normalizeEmail(email);
     const [users] = await pool.query(

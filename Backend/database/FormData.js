@@ -339,7 +339,6 @@ const getAllInfo = async (req, res) => {
   try {
     const sql = `SELECT id, name, phone, email, application_type, status, reviewed, created_at, updated_at FROM applicants ORDER BY id DESC`;
     const [rows] = await database.query(sql);
-
     const formattedRows = rows.map((row) => ({
       ...row,
       created_at: moment(row.created_at).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'),
