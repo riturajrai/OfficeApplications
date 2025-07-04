@@ -39,7 +39,7 @@ app.use('/api/attendance' , attendance)
 app.use('/api/auth', authRoute);
 app.use('/api/face-users', faceUsersRoutes);
 app.use('/api/admin', authRoute);
-app.post('/api/applicants', authenticateToken, postInfo);
+app.post('/api/applicants', postInfo);
 app.get('/api/applicants', authenticateToken, getAllInfo);
 app.get('/api/applicants/:id', authenticateToken, getApplicantById);
 app.get('/api/resume/:id', getResumeById);
