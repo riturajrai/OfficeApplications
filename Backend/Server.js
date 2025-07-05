@@ -20,14 +20,18 @@ const attendance = require('./attendance.js/attendance');
 const faceUsersRoutes = require('./attendance.js/face-users');
 const department = require('./Department/Department');
 const degignation = require('./Designation/Designation');
-const FormSubmission = require('./Qr Routes/FormSubmissin');
+
 const LocationCoordinates = require('./LocationCoordinates/locationRoutes');
 const submissionRoutes = require('./DashborderController/FormSubmissionCounter');
-
+const ApplicationType = require('./ApplicationType/ApplicationType')
+const helmet = require('helmet');
 
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+
+app.use(helmet());
 
 // CORS & Middleware
 app.use(express.json());
@@ -39,12 +43,12 @@ app.use(cors({
 }));
 
 //  REST ROUTES
+app.use('/api', ApplicationType)
 app.use('/api', LocationCoordinates);
 app.use('/api', degignation);
 app.use('/api', Notification);
 app.use('/api', department);
 app.use('/api', qrCode);
-app.use('/api', FormSubmission);
 app.use('/api', submissionRoutes);
 
 app.use('/api/attendance', attendance);
@@ -53,7 +57,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/admin', authRoute);
 
 //  Applicants CRUD
-app.post('/api/applicants',postInfo);
+app.post('/api/applicants', authenticateToken, postInfo);
 app.get('/api/applicants', authenticateToken, getAllInfo);
 app.get('/api/applicants/:id', authenticateToken, getApplicantById);
 app.get('/api/resume/:id', getResumeById);

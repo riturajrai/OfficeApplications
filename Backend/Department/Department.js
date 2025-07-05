@@ -3,7 +3,8 @@ const router = express.Router();
 const pool = require('../database/mysql');
 const authenticateToken = require('../middleware/AuthenticationToken')
 const { body, validationResult } = require('express-validator');
-// Department Post
+
+
 router.post('/department', authenticateToken,
   [ body('name').trim().notEmpty().withMessage('Department name is required').isLength({ max: 100 })
     .withMessage('Department name must not exceed 100 characters'),
