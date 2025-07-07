@@ -3,19 +3,10 @@ const router = express.Router();
 const database = require('../database/mysql');
 const authenticateToken = require('../middleware/AuthenticationToken');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 
 // Apply helmet middleware
 router.use(helmet());
-
-// Rate limiter: Limit each IP to 100 requests per 15 minutes
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: "Too many requests from this IP, please try again later."
-});
-router.use(limiter);
 
 // GET: Fetch all application types by user_id
 router.get('/applicationtype', authenticateToken, async (req, res) => {
