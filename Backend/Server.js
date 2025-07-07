@@ -57,7 +57,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/admin', authRoute);
 
 //  Applicants CRUD
-app.post('/api/applicants', authenticateToken, postInfo);
+app.post('/api/applicants',postInfo);
 app.get('/api/applicants', authenticateToken, getAllInfo);
 app.get('/api/applicants/:id', authenticateToken, getApplicantById);
 app.get('/api/resume/:id', getResumeById);
