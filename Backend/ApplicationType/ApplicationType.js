@@ -17,7 +17,6 @@ const limiter = rateLimit({
 });
 router.use(limiter);
 
-
 // GET: Fetch all application types by user_id
 router.get('/applicationtype', authenticateToken, async (req, res) => {
   try {

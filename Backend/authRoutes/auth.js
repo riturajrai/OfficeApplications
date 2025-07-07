@@ -9,9 +9,9 @@ const transporter = require('../database/Nodemailer');
 const validator = require('validator');
 const geoip = require('geoip-lite');
 
-// Validate JWT secrets
-if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
-  throw new Error('JWT_SECRET and JWT_REFRESH_SECRET must be defined in .env');
+// Validate JWT secret
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be defined in .env');
 }
 
 // Helper function to check if IP is localhost
@@ -51,6 +51,7 @@ router.post('/signup', async (req, res) => {
       message: 'Password must be at least 6 characters long',
     });
   }
+
   try {
     const sanitizedName = validator.escape(name.trim());
     const sanitizedEmail = validator.normalizeEmail(email);
@@ -65,13 +66,12 @@ router.post('/signup', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const ipAddresses = updateIpAddresses(null, clientIp);
 
-    let city = 'Unknown';
-    let country = 'Unknown';
-    let region = 'Unknown';
+    let city = 'Unknown', country = 'Unknown', region = 'Unknown';
     if (!isLocalhost(clientIp)) {
       try {
-        const response = await axios.get(`http://ip-api.com/json/${clientIp}`, { timeout: 5000 });
+        const response = await axios.get(`http://ip-api.com/json/${clientIp}`, { timeout: 3000 });
         if (response.data.status === 'success') {
           city = response.data.city || 'Unknown';
           country = response.data.country || 'Unknown';
@@ -86,20 +86,26 @@ router.post('/signup', async (req, res) => {
         }
       } catch (geoError) {
         console.warn('Geolocation lookup failed:', geoError.message);
-        const geo = geoip.lookup(clientIp);
-        if (geo) {
-          city = geo.city || 'Unknown';
-          country = geo.country || 'Unknown';
-          region = geo.region || 'Unknown';
+        if (geoError.response?.status === 429) {
+          console.warn('Rate limit exceeded for ip-api.com');
+          const geo = geoip.lookup(clientIp);
+          if (geo) {
+            city = geo.city || 'Unknown';
+            country = geo.country || 'Unknown';
+            region = geo.region || 'Unknown';
+          }
+        } else {
+          const geo = geoip.lookup(clientIp);
+          if (geo) {
+            city = geo.city || 'Unknown';
+            country = geo.country || 'Unknown';
+            region = geo.region || 'Unknown';
+          }
         }
       }
     } else {
-      city = 'Localhost';
-      country = 'Localhost';
-      region = 'Localhost';
+      city = country = region = 'Localhost';
     }
-
-    const ipAddresses = updateIpAddresses(null, clientIp);
 
     const [result] = await pool.query(
       'INSERT INTO users (name, email, password, ip_addresses, city, country, region, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
@@ -109,17 +115,11 @@ router.post('/signup', async (req, res) => {
     const token = jwt.sign({ id: result.insertId, email: sanitizedEmail }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
-    const refreshToken = jwt.sign({ id: result.insertId, email: sanitizedEmail }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: '30d',
-    });
-
-    await pool.query('UPDATE users SET refresh_token = ? WHERE id = ?', [refreshToken, result.insertId]);
 
     res.status(201).json({
       message: 'User registered successfully',
       data: {
         token,
-        refresh_token: refreshToken,
         user: {
           id: result.insertId,
           name: sanitizedName,
@@ -132,7 +132,7 @@ router.post('/signup', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Signup Error:', { message: error.message, stack: error.stack });
+    console.error('Signup Error:', error.message);
     res.status(500).json({
       error: 'Server error',
       message: 'Failed to register user',
@@ -166,7 +166,6 @@ router.post('/login', async (req, res) => {
     }
 
     const user = users[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
@@ -179,17 +178,11 @@ router.post('/login', async (req, res) => {
     await pool.query('UPDATE users SET ip_addresses = ? WHERE id = ?', [updatedIpAddresses, user.id]);
 
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    const refreshToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: '30d',
-    });
-
-    await pool.query('UPDATE users SET refresh_token = ? WHERE id = ?', [refreshToken, user.id]);
 
     res.status(200).json({
       message: 'Login successful',
       data: {
         token,
-        refresh_token: refreshToken,
         user: {
           id: user.id,
           name: user.name,
@@ -199,68 +192,19 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Login Error:', { message: error.message, stack: error.stack });
+    console.error('Login Error:', error.message);
     res.status(500).json({
       error: 'Server error',
-      message: 'Failed to log in. Please try again later.',
-    });
-  }
-});
-
-// Refresh Token Route
-router.post('/refresh-token', async (req, res) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    return res.status(401).json({
-      error: 'Missing token',
-      message: 'Refresh token is required',
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const [users] = await pool.query('SELECT id, email FROM users WHERE refresh_token = ? AND id = ?', [
-      refreshToken,
-      decoded.id,
-    ]);
-    if (users.length === 0) {
-      return res.status(403).json({
-        error: 'Invalid token',
-        message: 'Refresh token is invalid',
-      });
-    }
-
-    const user = users[0];
-    const newToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    res.status(200).json({
-      message: 'Token refreshed successfully',
-      data: { token: newToken },
-    });
-  } catch (error) {
-    console.error('Refresh Token Error:', { message: error.message, stack: error.stack });
-    res.status(403).json({
-      error: 'Invalid token',
-      message: 'Failed to refresh token',
+      message: 'Failed to log in',
     });
   }
 });
 
 // Logout Route
 router.post('/logout', authenticateToken, async (req, res) => {
-  try {
-    await pool.query('UPDATE users SET refresh_token = NULL WHERE id = ?', [req.user.id]);
-    res.status(200).json({
-      message: 'Logged out successfully',
-    });
-  } catch (error) {
-    console.error('Logout Error:', { message: error.message, stack: error.stack });
-    res.status(500).json({
-      error: 'Server error',
-      message: 'Failed to log out. Please try again.',
-    });
-  }
+  res.status(200).json({
+    message: 'Logged out successfully',
+  });
 });
 
 // Forgot Password Route
@@ -333,17 +277,16 @@ router.post('/forgot-password', async (req, res) => {
       data: { details: 'A 6-digit verification code has been sent to your email.' },
     });
   } catch (error) {
-    console.error('Forgot Password Error:', { message: error.message, stack: error.stack });
+    console.error('Forgot Password Error:', error.message);
     res.status(500).json({
       error: 'Server error',
-      message: 'Failed to send verification code. Please try again later.',
+      message: 'Failed to send verification code',
     });
   }
 });
 
 // Verify OTP Route
 router.post('/verify-otp', async (req, res) => {
-  
   const { email, otp } = req.body;
   if (!email || !otp) {
     return res.status(400).json({
@@ -369,10 +312,10 @@ router.post('/verify-otp', async (req, res) => {
       data: { email: sanitizedEmail },
     });
   } catch (error) {
-    console.error('OTP Verification Error:', { message: error.message, stack: error.stack });
+    console.error('OTP Verification Error:', error.message);
     res.status(500).json({
       error: 'Server error',
-      message: 'Failed to verify OTP. Please try again.',
+      message: 'Failed to verify OTP',
     });
   }
 });
@@ -421,10 +364,10 @@ router.post('/reset-password', async (req, res) => {
       data: { email: sanitizedEmail },
     });
   } catch (error) {
-    console.error('Reset Password Error:', { message: error.message, stack: error.stack });
+    console.error('Reset Password Error:', error.message);
     res.status(500).json({
       error: 'Server error',
-      message: 'Failed to reset password. Please try again.',
+      message: 'Failed to reset password',
     });
   }
 });
@@ -446,10 +389,10 @@ router.get('/me', authenticateToken, async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error('Profile Fetch Error:', { message: error.message, stack: error.stack });
+    console.error('Profile Fetch Error:', error.message);
     res.status(500).json({
       error: 'Server error',
-      message: 'Failed to fetch user profile.',
+      message: 'Failed to fetch user profile',
     });
   }
 });
@@ -475,7 +418,7 @@ router.get('/', authenticateToken, async (req, res) => {
       data: formattedUsers,
     });
   } catch (error) {
-    console.error('Admin Fetch Error:', { message: error.message, stack: error.stack });
+    console.error('Admin Fetch Error:', error.message);
     res.status(500).json({
       error: 'Server error',
       message: 'Failed to fetch users',
@@ -497,7 +440,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       message: 'User deleted successfully',
     });
   } catch (error) {
-    console.error('Delete User Error:', { message: error.message, stack: error.stack });
+    console.error('Delete User Error:', error.message);
     res.status(500).json({
       error: 'Server error',
       message: 'Failed to delete user',
@@ -569,7 +512,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       data: { id: req.params.id, name: sanitizedName, email: sanitizedEmail },
     });
   } catch (error) {
-    console.error('Edit User Error:', { message: error.message, stack: error.stack });
+    console.error('Edit User Error:', error.message);
     res.status(500).json({
       error: 'Server error',
       message: 'Failed to update user',
