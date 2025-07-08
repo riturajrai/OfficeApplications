@@ -131,9 +131,9 @@ router.delete('/qrcodes/:id', authenticationToken, async (req, res) => {
     }
     console.log(`QR code deleted: ${id}`);
     res.status(200).json({ message: 'Successfully deleted', result });
-  } catch (err) {
-    console.error('Delete QR Error:', err);
-    res.status(500).json({ message: 'Something went wrong while deleting QR code', error: err.message });
+  } catch (error) {
+    console.error('Delete QR Error:', error);
+    res.status(500).json({ message: 'Something went wrong while deleting QR code', error: error.message });
   }
 });
 
@@ -357,47 +357,49 @@ router.patch('/formDetails/:id/status', authenticationToken, async (req, res) =>
   const { id } = req.params;
   const { status } = req.body;
   const user_id = req.user.id;
+  const validStatuses = ['pending', 'reviewed', 'shortlisted', 'rejected', 'approved', 'on_hold'];
 
-  if (!['pending', 'reviewed', 'shortlisted', 'rejected', 'approved', 'on_hold'].includes(status)) {
-    console.error('Invalid status provided:', status);
-    return res.status(400).json({ 
-      message: 'Invalid status. Must be pending, reviewed, shortlisted, rejected, approved, or on_hold.' 
+  if (!status || !validStatuses.includes(status)) {
+    console.warn(`Invalid status provided: ${status} for submission ID: ${id}`);
+    return res.status(400).json({
+      message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
     });
   }
 
   try {
+    // Fetch submission to verify existence
     const [submission] = await database.query(
-      'SELECT name, application_type, designation, user_id FROM form_submissions WHERE id = ? AND user_id = ?',
-      [id, user_id]
+      'SELECT id, name, application_type, designation, user_id FROM form_submissions WHERE id = ?',
+      [id]
     );
 
-    if (submission.length === 0) {
-      console.warn(`Form submission with ID ${id} not found or unauthorized for user ${user_id}`);
-      return res.status(404).json({ message: 'Form submission not found or unauthorized' });
+    if (!submission.length) {
+      console.warn(`Form submission with ID ${id} not found`);
+      return res.status(404).json({ message: 'Form submission not found' });
     }
 
-    const [result] = await database.query(
-      'UPDATE form_submissions SET status = ?, reviewed = 1 WHERE id = ? AND user_id = ?',
-      [status, id, user_id]
+    // Update status
+    const [updated] = await database.query(
+      'UPDATE form_submissions SET status = ?, updated_at = NOW() WHERE id = ?',
+      [status, id]
     );
 
-    if (result.affectedRows === 0) {
-      console.warn(`No rows affected for form submission ID ${id} for user ${user_id}`);
-      return res.status(404).json({ message: 'Form submission not found or unauthorized' });
+    if (updated.affectedRows === 0) {
+      console.warn(`No rows affected for form submission ID ${id}`);
+      return res.status(404).json({ message: 'Form submission not found' });
     }
 
-    // Add notification for status update
-    const { name, application_type, designation } = submission[0];
-    const notiMessage = `Form submission from "${name}" for ${application_type} (${designation}) has been ${status}.`;
+    // Add notification
+    const notiMessage = `Form submission from "${submission[0].name}" for ${submission[0].application_type} (${submission[0].designation || 'N/A'}) has been ${status}.`;
     await database.query(
-      `INSERT INTO Notification (user_id, type, message, status) VALUES (?, ?, ?, 'unread')`,
-      [user_id, 'Status Update', notiMessage]
+      'INSERT INTO Notification (user_id, type, message, status, created_at) VALUES (?, ?, ?, ?, NOW())',
+      [submission[0].user_id, 'Status Update', notiMessage, 'unread']
     );
 
     console.log(`Status updated for form submission ID ${id} to ${status} by user ${user_id}`);
     res.status(200).json({
       message: 'Status updated successfully',
-      data: { id, status, reviewed: 1 },
+      data: { id: parseInt(id), status },
     });
   } catch (error) {
     console.error('Status Update Error:', {
@@ -411,16 +413,76 @@ router.patch('/formDetails/:id/status', authenticationToken, async (req, res) =>
   }
 });
 
+// Update form submission review status (authenticated)
+router.patch('/formDetails/:id/review', authenticationToken, async (req, res) => {
+  const { id } = req.params;
+  const { reviewed } = req.body;
+  const user_id = req.user.id;
+
+  if (typeof reviewed !== 'number' || ![0, 1].includes(reviewed)) {
+    console.warn(`Invalid reviewed value provided: ${reviewed} for submission ID: ${id}`);
+    return res.status(400).json({
+      message: 'Invalid reviewed value. Must be 0 or 1',
+    });
+  }
+
+  try {
+    // Fetch submission to verify existence
+    const [submission] = await database.query(
+      'SELECT id, name, application_type, designation, user_id FROM form_submissions WHERE id = ?',
+      [id]
+    );
+
+    if (!submission.length) {
+      console.warn(`Form submission with ID ${id} not found`);
+      return res.status(404).json({ message: 'Form submission not found' });
+    }
+
+    // Update reviewed status
+    const [updated] = await database.query(
+      'UPDATE form_submissions SET reviewed = ?, updated_at = NOW() WHERE id = ?',
+      [reviewed, id]
+    );
+
+    if (updated.affectedRows === 0) {
+      console.warn(`No rows affected for form submission ID ${id}`);
+      return res.status(404).json({ message: 'Form submission not found' });
+    }
+
+    // Add notification
+    const notiMessage = `Form submission from "${submission[0].name}" for ${submission[0].application_type} (${submission[0].designation || 'N/A'}) has been ${reviewed ? 'marked as reviewed' : 'marked as unreviewed'}.`;
+    await database.query(
+      'INSERT INTO Notification (user_id, type, message, status, created_at) VALUES (?, ?, ?, ?, NOW())',
+      [submission[0].user_id, 'Review Update', notiMessage, 'unread']
+    );
+
+    console.log(`Review status updated for form submission ID ${id} to ${reviewed} by user ${user_id}`);
+    res.status(200).json({
+      message: 'Review status updated successfully',
+      data: { id: parseInt(id), reviewed },
+    });
+  } catch (error) {
+    console.error('Review Update Error:', {
+      message: error.message,
+      stack: error.stack,
+      id,
+      user_id,
+      reviewed,
+    });
+    res.status(500).json({ message: 'Failed to update review status', error: error.message });
+  }
+});
+
 // Get resume by form submission ID
 router.get('/form/resume/:id', authenticationToken, async (req, res) => {
   const formId = req.params.id;
   try {
     const [rows] = await database.query(
-      'SELECT resume, name FROM form_submissions WHERE id = ? AND user_id = ?',
-      [formId, req.user.id]
+      'SELECT resume, name FROM form_submissions WHERE id = ?',
+      [formId]
     );
     if (!rows.length || !rows[0].resume) {
-      console.warn(`Resume not found for form ID ${formId} for user ${req.user.id}`);
+      console.warn(`Resume not found for form ID ${formId}`);
       return res.status(404).json({ message: 'Resume not found' });
     }
     res.set({
@@ -466,4 +528,5 @@ router.get('/user', authenticationToken, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch user', error: error.message });
   }
 });
+
 module.exports = router;
