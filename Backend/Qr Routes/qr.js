@@ -70,7 +70,7 @@ router.post('/qrcodes', authenticationToken, async (req, res) => {
     });
   } catch (error) {
     console.error('QR Code Save Error:', error);
-    res.status(500).json({ message: 'Failed to save QR code' });
+    res.status(500).json({ message: 'Failed to save QR code', error: error.message });
   }
 });
 
@@ -89,7 +89,7 @@ router.get('/qrcodes', authenticationToken, async (req, res) => {
     });
   } catch (error) {
     console.error('QR Code Fetch Error:', error);
-    res.status(500).json({ message: 'Failed to fetch QR codes' });
+    res.status(500).json({ message: 'Failed to fetch QR codes', error: error.message });
   }
 });
 
@@ -112,7 +112,7 @@ router.get('/qrcodes/code/:code', async (req, res) => {
     });
   } catch (error) {
     console.error('QR Code Fetch Error:', error);
-    res.status(500).json({ message: 'Failed to fetch QR code' });
+    res.status(500).json({ message: 'Failed to fetch QR code', error: error.message });
   }
 });
 
@@ -133,7 +133,7 @@ router.delete('/qrcodes/:id', authenticationToken, async (req, res) => {
     res.status(200).json({ message: 'Successfully deleted', result });
   } catch (err) {
     console.error('Delete QR Error:', err);
-    res.status(500).json({ message: 'Something went wrong while deleting QR code' });
+    res.status(500).json({ message: 'Something went wrong while deleting QR code', error: err.message });
   }
 });
 
@@ -177,7 +177,7 @@ router.post('/qrcodes/validate/:code', async (req, res) => {
     }
   } catch (error) {
     console.error('QR code validation error:', error);
-    res.status(500).json({ message: 'Internal Server Error', withinRange: false });
+    res.status(500).json({ message: 'Internal Server Error', withinRange: false, error: error.message });
   }
 });
 
@@ -188,7 +188,7 @@ router.get('/qrcodes/:code/data', async (req, res) => {
     console.log(`Fetching data for QR code: ${code}`);
     const [qrCode] = await database.query('SELECT user_id FROM qrcodes WHERE code = ?', [code]);
     if (!qrCode.length) {
-      console.warn(`QR code ${code} not found`);
+      console.warn(`QR code with code ${code} not found`);
       return res.status(404).json({ message: 'QR code not found' });
     }
 
@@ -221,14 +221,14 @@ router.get('/qrcodes/:code/data', async (req, res) => {
     });
   } catch (error) {
     console.error('Data Fetch Error:', error);
-    res.status(500).json({ message: 'Failed to fetch data' });
+    res.status(500).json({ message: 'Failed to fetch data', error: error.message });
   }
 });
 
 // Submit form with new fields (public access)
 router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
   const { code } = req.params;
-  const { name, email, reason, application_type, designation, department_id } = req.body;
+  const { name, email, reason, application_type, designation, department_name } = req.body;
   const resume = req.file;
 
   if (!name || !email || !application_type || !designation) {
@@ -249,7 +249,7 @@ router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
 
     // Validate application_type
     const [appType] = await database.query(
-      'SELECT id FROM ApplicationType WHERE name = ? AND user_id = ?',
+      'SELECT id, name FROM ApplicationType WHERE name = ? AND user_id = ?',
       [application_type, user_id]
     );
     if (!appType.length) {
@@ -258,27 +258,29 @@ router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
 
     // Validate designation
     const [desig] = await database.query(
-      'SELECT id FROM designation WHERE name = ? AND user_id = ?',
+      'SELECT id, name FROM designation WHERE name = ? AND user_id = ?',
       [designation, user_id]
     );
     if (!desig.length) {
       return res.status(400).json({ message: 'Invalid designation' });
     }
 
-    // Validate department_id if provided
-    if (department_id) {
+    // Validate department_name if provided
+    let departmentNameToStore = null;
+    if (department_name) {
       const [dept] = await database.query(
-        'SELECT id FROM department WHERE id = ? AND user_id = ?',
-        [department_id, user_id]
+        'SELECT name FROM department WHERE name = ? AND user_id = ?',
+        [department_name, user_id]
       );
       if (!dept.length) {
-        return res.status(400).json({ message: 'Invalid department' });
+        return res.status(400).json({ message: 'Invalid department name' });
       }
+      departmentNameToStore = dept[0].name;
     }
 
     const [result] = await database.query(
       `INSERT INTO form_submissions 
-      (qr_code_id, user_id, name, email, reason, application_type, designation, department_id, resume, created_at, status, reviewed) 
+      (qr_code_id, user_id, name, email, reason, application_type, designation, department_name, resume, created_at, status, reviewed) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)`,
       [
         qr_code_id,
@@ -286,9 +288,9 @@ router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
         name,
         email,
         reason || null,
-        application_type,
+        appType[0].name,
         designation,
-        department_id || null,
+        departmentNameToStore,
         resume ? resume.buffer : null,
         'pending',
         0,
@@ -296,7 +298,7 @@ router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
     );
 
     // Add to notifications
-    const notiMessage = `New ${application_type} submission from "${name}" for ${designation}.`;
+    const notiMessage = `New ${appType[0].name} submission from "${name}" for ${designation}.`;
     await database.query(
       `INSERT INTO Notification (user_id, type, message, status) VALUES (?, ?, ?, 'unread')`,
       [user_id, 'Form Submission', notiMessage]
@@ -312,16 +314,16 @@ router.post('/form/:code/submit', upload.single('resume'), async (req, res) => {
         name,
         email,
         reason,
-        application_type,
+        application_type: appType[0].name,
         designation,
-        department_id,
+        department_name: departmentNameToStore,
         status: 'pending',
         created_at: new Date(),
       },
     });
   } catch (error) {
     console.error('Form Submission Error:', error);
-    res.status(500).json({ message: 'Failed to submit form' });
+    res.status(500).json({ message: 'Failed to submit form', error: error.message });
   }
 });
 
@@ -332,11 +334,11 @@ router.get('/formDetails', authenticationToken, async (req, res) => {
     const sql = `
       SELECT 
         fs.id, fs.qr_code_id, fs.user_id, fs.name, fs.email, fs.reason, 
-        fs.application_type, fs.designation, fs.department_id, fs.status, 
-        fs.reviewed, fs.created_at, d.name AS department_name, at.name AS application_type_name
+        fs.application_type, fs.designation, fs.department_name, 
+        fs.status, fs.reviewed, fs.created_at, 
+        at.name AS application_type_name
       FROM form_submissions fs
-      LEFT JOIN department d ON fs.department_id = d.id
-      LEFT JOIN ApplicationType at ON fs.application_type = at.name
+      LEFT JOIN ApplicationType at ON fs.application_type = at.name AND at.user_id = fs.user_id
       WHERE fs.user_id = ? 
       ORDER BY fs.created_at DESC`;
     const [results] = await database.query(sql, [user_id]);
@@ -346,7 +348,66 @@ router.get('/formDetails', authenticationToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Fetch Error:', error);
-    res.status(500).json({ message: 'Failed to fetch form submissions' });
+    res.status(500).json({ message: 'Failed to fetch form submissions', error: error.message });
+  }
+});
+
+// Update form submission status (authenticated)
+router.patch('/formDetails/:id/status', authenticationToken, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const user_id = req.user.id;
+
+  if (!['pending', 'reviewed', 'shortlisted', 'rejected', 'approved', 'on_hold'].includes(status)) {
+    console.error('Invalid status provided:', status);
+    return res.status(400).json({ 
+      message: 'Invalid status. Must be pending, reviewed, shortlisted, rejected, approved, or on_hold.' 
+    });
+  }
+
+  try {
+    const [submission] = await database.query(
+      'SELECT name, application_type, designation, user_id FROM form_submissions WHERE id = ? AND user_id = ?',
+      [id, user_id]
+    );
+
+    if (submission.length === 0) {
+      console.warn(`Form submission with ID ${id} not found or unauthorized for user ${user_id}`);
+      return res.status(404).json({ message: 'Form submission not found or unauthorized' });
+    }
+
+    const [result] = await database.query(
+      'UPDATE form_submissions SET status = ?, reviewed = 1 WHERE id = ? AND user_id = ?',
+      [status, id, user_id]
+    );
+
+    if (result.affectedRows === 0) {
+      console.warn(`No rows affected for form submission ID ${id} for user ${user_id}`);
+      return res.status(404).json({ message: 'Form submission not found or unauthorized' });
+    }
+
+    // Add notification for status update
+    const { name, application_type, designation } = submission[0];
+    const notiMessage = `Form submission from "${name}" for ${application_type} (${designation}) has been ${status}.`;
+    await database.query(
+      `INSERT INTO Notification (user_id, type, message, status) VALUES (?, ?, ?, 'unread')`,
+      [user_id, 'Status Update', notiMessage]
+    );
+
+    console.log(`Status updated for form submission ID ${id} to ${status} by user ${user_id}`);
+    res.status(200).json({
+      message: 'Status updated successfully',
+      data: { id, status, reviewed: 1 },
+    });
+  } catch (error) {
+    console.error('Status Update Error:', {
+      message: error.message,
+      stack: error.stack,
+      id,
+      user_id,
+      status,
+    });
+    res.status(500).json({ message: 'Failed to update status', error: error.message });
   }
 });
 
@@ -359,6 +420,7 @@ router.get('/form/resume/:id', authenticationToken, async (req, res) => {
       [formId, req.user.id]
     );
     if (!rows.length || !rows[0].resume) {
+      console.warn(`Resume not found for form ID ${formId} for user ${req.user.id}`);
       return res.status(404).json({ message: 'Resume not found' });
     }
     res.set({
@@ -368,7 +430,7 @@ router.get('/form/resume/:id', authenticationToken, async (req, res) => {
     res.send(rows[0].resume);
   } catch (error) {
     console.error('Resume Fetch Error:', error);
-    res.status(500).json({ message: 'Failed to fetch resume' });
+    res.status(500).json({ message: 'Failed to fetch resume', error: error.message });
   }
 });
 
@@ -381,13 +443,27 @@ router.get('/qrcodes/user', authenticationToken, async (req, res) => {
       [user_id]
     );
     if (qrCode.length === 0) {
+      console.warn(`No QR code found for user ${user_id}`);
       return res.status(404).json({ message: 'No QR code found for user' });
     }
     res.status(200).json({ message: 'QR code fetched successfully', code: qrCode[0].code });
   } catch (error) {
     console.error('QR code fetch error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
 
+// User validation endpoint
+router.get('/user', authenticationToken, async (req, res) => {
+  try {
+    const [user] = await database.query('SELECT id, email FROM users WHERE id = ?', [req.user.id]);
+    if (!user.length) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ message: 'User fetched successfully', user: user[0] });
+  } catch (error) {
+    console.error('User Fetch Error:', error);
+    res.status(500).json({ message: 'Failed to fetch user', error: error.message });
+  }
+});
 module.exports = router;
