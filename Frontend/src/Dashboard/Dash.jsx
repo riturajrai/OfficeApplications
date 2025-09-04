@@ -34,10 +34,10 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="max-w-full sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700">
             <ExclamationCircleIcon className="h-8 w-8 text-red-500 dark:text-red-400 mx-auto mb-3" />
-            <h2 className="text-[12px] font-semibold text-gray-900 dark:text-white">Something Went Wrong</h2>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2">{this.state.errorMessage}</p>
+            <h2 className="text-[12px] font-semibold text-slate-900 dark:text-slate-100">Something Went Wrong</h2>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">{this.state.errorMessage}</p>
           </div>
         </div>
       );
@@ -59,7 +59,7 @@ const TooltipComponent = ({ children, text, position = 'bottom' }) => {
     <div className="relative group inline-block">
       {children}
       <span
-        className={`absolute ${positionClasses[position]} hidden group-hover:block px-2 py-1 text-[12px] text-white bg-gray-800 dark:bg-gray-700 rounded-md shadow-lg transition-opacity duration-200 opacity-0 group-hover:opacity-100 z-50 whitespace-nowrap`}
+        className={`absolute ${positionClasses[position]} hidden group-hover:block px-2 py-1 text-[12px] text-white bg-slate-800 dark:bg-slate-700 rounded-md shadow-lg transition-opacity duration-200 opacity-0 group-hover:opacity-100 z-50 whitespace-nowrap`}
       >
         {text}
       </span>
@@ -69,17 +69,17 @@ const TooltipComponent = ({ children, text, position = 'bottom' }) => {
 
 // Submission Item Component (Memoized)
 const SubmissionItem = memo(({ submission }) => (
-  <div className="px-4 py-3 sm:px-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+  <div className="px-4 py-3 sm:px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
       <div className="flex items-center space-x-3">
-        <div className="flex-shrink-0 bg-pink-100 dark:bg-pink-900/20 p-1.5 rounded-full">
-          <UserIcon className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+        <div className="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/20 p-1.5 rounded-full">
+          <UserIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div className="text-left">
-          <h4 className="text-[12px] font-semibold text-gray-900 dark:text-white">
+          <h4 className="text-[12px] font-semibold text-slate-900 dark:text-slate-100">
             {submission.name || 'Unknown Name'}
           </h4>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mt-1 text-[12px] text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mt-1 text-[12px] text-slate-500 dark:text-slate-400">
             <div className="flex items-center">
               <EnvelopeIcon className="h-4 w-4 mr-1" />
               <span>{submission.email || 'No email'}</span>
@@ -92,7 +92,7 @@ const SubmissionItem = memo(({ submission }) => (
         </div>
       </div>
       <div className="text-right">
-        <p className="text-[12px] text-gray-500 dark:text-gray-400">
+        <p className="text-[12px] text-slate-500 dark:text-slate-400">
           {submission.created_at
             ? format(parseISO(submission.created_at), 'MMM d, yyyy')
             : 'Unknown date'}
@@ -149,10 +149,10 @@ function Dashboard() {
     const token = localStorage.getItem('token');
     if (!token) {
       setError(
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 text-center">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 text-center">
           <ExclamationCircleIcon className="h-8 w-8 text-red-500 dark:text-red-400 mx-auto mb-3" />
-          <h3 className="text-[12px] font-semibold text-gray-900 dark:text-white">Authentication Required</h3>
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2">
+          <h3 className="text-[12px] font-semibold text-slate-900 dark:text-slate-100">Authentication Required</h3>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">
             Please sign in to access the dashboard.
           </p>
         </div>
@@ -200,10 +200,10 @@ function Dashboard() {
     } catch (err) {
       console.error('Dashboard data fetch error:', err);
       let errorMessage = (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 text-center">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 text-center">
           <ExclamationCircleIcon className="h-8 w-8 text-red-500 dark:text-red-400 mx-auto mb-3" />
-          <h3 className="text-[12px] font-semibold text-gray-900 dark:text-white">Failed to Load Dashboard</h3>
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2">
+          <h3 className="text-[12px] font-semibold text-slate-900 dark:text-slate-100">Failed to Load Dashboard</h3>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">
             {err.response?.status === 400
               ? `Invalid request parameters: ${err.response.data.errors?.map((e) => e.msg).join(', ') || 'Check your filters.'}`
               : err.response?.status === 401 || err.response?.status === 403
@@ -273,10 +273,10 @@ function Dashboard() {
       setIsContactOpen(false);
     } catch (err) {
       setError(
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 text-center">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 text-center">
           <ExclamationCircleIcon className="h-8 w-8 text-red-500 dark:text-red-400 mx-auto mb-3" />
-          <h3 className="text-[12px] font-semibold text-gray-900 dark:text-white">Failed to Send Message</h3>
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2">
+          <h3 className="text-[12px] font-semibold text-slate-900 dark:text-slate-100">Failed to Send Message</h3>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">
             {err.response?.data?.message || err.message}
           </p>
         </div>
@@ -296,7 +296,7 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <ApiLoader />
       </div>
     );
@@ -304,30 +304,28 @@ function Dashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 px-4 py-6 sm:px-6 lg:px-8 font-roboto text-[12px] antialiased">
-      
-
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-6 sm:px-6 lg:px-8 font-[Inter] text-[12px] antialiased">
         {/* Main Content */}
         <main className="max-w-full sm:max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
           {error ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 animate-fade-in">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-slate-200 dark:border-slate-700 animate-fade-in">
               {error}
             </div>
           ) : (
             <div className="space-y-6">
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="px-4 py-4 sm:p-5">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 bg-pink-600 rounded-md p-1.5">
+                      <div className="flex-shrink-0 bg-indigo-600 dark:bg-indigo-500 rounded-md p-1.5">
                         <DocumentTextIcon className="h-5 w-5 text-white" />
                       </div>
                       <div className="ml-3 flex-1">
-                        <dt className="text-[12px] font-medium text-gray-500 dark:text-gray-400 text-left">Total Submissions</dt>
+                        <dt className="text-[12px] font-medium text-slate-500 dark:text-slate-400 text-left">Total Submissions</dt>
                         <dd className="flex items-baseline">
                           <TooltipComponent text="All-time form submissions">
-                            <div className="text-[12px] font-bold text-gray-900 dark:text-white">
+                            <div className="text-[12px] font-bold text-slate-900 dark:text-slate-100">
                               {dashboardData.counter.toLocaleString('en-IN')}
                             </div>
                           </TooltipComponent>
@@ -335,10 +333,10 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 sm:px-5">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 sm:px-5">
                     <Link
                       to="/form-submission"
-                      className="text-[12px] font-medium text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 flex items-center"
+                      className="text-[12px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 flex items-center"
                       aria-label="View all form submissions"
                     >
                       View all
@@ -349,17 +347,17 @@ function Dashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="px-4 py-4 sm:p-5">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 bg-green-600 rounded-md p-1.5">
+                      <div className="flex-shrink-0 bg-green-600 dark:bg-green-500 rounded-md p-1.5">
                         <DocumentTextIcon className="h-5 w-5 text-white" />
                       </div>
                       <div className="ml-3 flex-1">
-                        <dt className="text-[12px] font-medium text-gray-500 dark:text-gray-400 text-left">Today's Submissions</dt>
+                        <dt className="text-[12px] font-medium text-slate-500 dark:text-slate-400 text-left">Today's Submissions</dt>
                         <dd className="flex items-baseline">
                           <TooltipComponent text="Submissions received today">
-                            <div className="text-[12px] font-bold text-gray-900 dark:text-white">
+                            <div className="text-[12px] font-bold text-slate-900 dark:text-slate-100">
                               {dashboardData.todayCount.toLocaleString('en-IN')}
                             </div>
                           </TooltipComponent>
@@ -367,24 +365,24 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 sm:px-5">
-                    <div className="text-[12px] text-gray-500 dark:text-gray-400 text-left">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 sm:px-5">
+                    <div className="text-[12px] text-slate-500 dark:text-slate-400 text-left">
                       {format(new Date(), 'MMMM d, yyyy')}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="px-4 py-4 sm:p-5">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 bg-pink-600 rounded-md p-1.5">
+                      <div className="flex-shrink-0 bg-indigo-600 dark:bg-indigo-500 rounded-md p-1.5">
                         <ClockIcon className="h-5 w-5 text-white" />
                       </div>
                       <div className="ml-3 flex-1">
-                        <dt className="text-[12px] font-medium text-gray-500 dark:text-gray-400 text-left">Avg Daily (30d)</dt>
+                        <dt className="text-[12px] font-medium text-slate-500 dark:text-slate-400 text-left">Avg Daily (30d)</dt>
                         <dd className="flex items-baseline">
                           <TooltipComponent text="Average submissions per day">
-                            <div className="text-[12px] font-bold text-gray-900 dark:text-white">
+                            <div className="text-[12px] font-bold text-slate-900 dark:text-slate-100">
                               {avgDailySubmissions.toLocaleString('en-IN')}
                             </div>
                           </TooltipComponent>
@@ -392,22 +390,22 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 sm:px-5">
-                    <div className="text-[12px] text-gray-500 dark:text-gray-400 text-left">Last 30 days average</div>
+                  <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 sm:px-5">
+                    <div className="text-[12px] text-slate-500 dark:text-slate-400 text-left">Last 30 days average</div>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="px-4 py-4 sm:p-5">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 bg-pink-600 rounded-md p-1.5">
+                      <div className="flex-shrink-0 bg-indigo-600 dark:bg-indigo-500 rounded-md p-1.5">
                         <CheckCircleIcon className="h-5 w-5 text-white" />
                       </div>
                       <div className="ml-3 flex-1">
-                        <dt className="text-[12px] font-medium text-gray-500 dark:text-gray-400 text-left">Completion Rate</dt>
+                        <dt className="text-[12px] font-medium text-slate-500 dark:text-slate-400 text-left">Completion Rate</dt>
                         <dd className="flex items-baseline">
                           <TooltipComponent text="Percentage of reviewed/approved submissions">
-                            <div className="text-[12px] font-bold text-gray-900 dark:text-white">
+                            <div className="text-[12px] font-bold text-slate-900 dark:text-slate-100">
                               {completionRate}%
                             </div>
                           </TooltipComponent>
@@ -415,8 +413,8 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 px-4 py-2 sm:px-5">
-                    <div className="text-[12px] text-gray-500 dark:text-gray-400 text-left">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 sm:px-5">
+                    <div className="text-[12px] text-slate-500 dark:text-slate-400 text-left">
                       {dashboardData.submissions.filter(sub => ['reviewed', 'approved'].includes(sub.status?.toLowerCase())).length} of {dashboardData.submissions.length} completed
                     </div>
                   </div>
@@ -424,17 +422,17 @@ function Dashboard() {
               </div>
 
               {/* Recent Submissions with Filters and Pagination */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="px-4 py-3 sm:px-5 border-b border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="px-4 py-3 sm:px-5 border-b border-slate-200 dark:border-slate-700">
                   <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-3">
-                    <h3 className="text-[12px] font-bold text-gray-900 dark:text-white text-left">Recent Submissions</h3>
+                    <h3 className="text-[12px] font-bold text-slate-900 dark:text-slate-100 text-left">Recent Submissions</h3>
                     <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
                       <div className="flex items-center space-x-2 w-full sm:w-auto">
-                        <FunnelIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" aria-hidden="true" />
+                        <FunnelIcon className="h-4 w-4 text-slate-500 dark:text-slate-400" aria-hidden="true" />
                         <select
                           value={filterStatus}
                           onChange={(e) => setFilterStatus(e.target.value)}
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200 w-full"
+                          className="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 w-full"
                           aria-label="Filter by status"
                         >
                           <option value="">All Statuses</option>
@@ -452,7 +450,7 @@ function Dashboard() {
                           value={filterDepartment}
                           onChange={(e) => setFilterDepartment(e.target.value)}
                           placeholder="Filter by department"
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200 w-full"
+                          className="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 w-full"
                           aria-label="Filter by department"
                         />
                       </div>
@@ -461,21 +459,21 @@ function Dashboard() {
                           type="date"
                           value={dateRange.startDate}
                           onChange={(e) => setDateRange((prev) => ({ ...prev, startDate: e.target.value }))}
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200 w-full"
+                          className="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 w-full"
                           aria-label="Start date"
                         />
                         <input
                           type="date"
                           value={dateRange.endDate}
                           onChange={(e) => setDateRange((prev) => ({ ...prev, endDate: e.target.value }))}
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200 w-full"
+                          className="border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-md px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 w-full"
                           aria-label="End date"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                <div className="divide-y divide-slate-200 dark:divide-slate-700">
                   {dashboardData.submissions.length > 0 ? (
                     dashboardData.submissions.map((submission) => (
                       <SubmissionItem key={submission.id} submission={submission} />
@@ -487,7 +485,7 @@ function Dashboard() {
                         alt="No submissions found"
                         className="w-20 sm:w-24 mx-auto mb-3 opacity-80"
                       />
-                      <p className="text-[12px] text-gray-500 dark:text-gray-400">
+                      <p className="text-[12px] text-slate-500 dark:text-slate-400">
                         No recent submissions found. Start by creating a new submission.
                       </p>
                     </div>
@@ -503,12 +501,12 @@ function Dashboard() {
                         }))
                       }
                       disabled={dashboardData.currentPage === 1}
-                      className="px-3 py-2 bg-pink-600 text-white rounded-md disabled:bg-gray-300 dark:disabled:bg-gray-600 hover:bg-pink-700 text-[12px] font-medium transition-all duration-200 w-full sm:w-auto"
+                      className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white rounded-md disabled:bg-slate-300 dark:disabled:bg-slate-600 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-[12px] font-medium transition-all duration-200 w-full sm:w-auto"
                       aria-label="Previous page"
                     >
                       Previous
                     </button>
-                    <span className="text-[12px] text-gray-500 dark:text-gray-400">
+                    <span className="text-[12px] text-slate-500 dark:text-slate-400">
                       Page {dashboardData.currentPage} of {dashboardData.totalPages}
                     </span>
                     <button
@@ -519,7 +517,7 @@ function Dashboard() {
                         }))
                       }
                       disabled={dashboardData.currentPage === dashboardData.totalPages}
-                      className="px-3 py-2 bg-pink-600 text-white rounded-md disabled:bg-gray-300 dark:disabled:bg-gray-600 hover:bg-pink-700 text-[12px] font-medium transition-all duration-200 w-full sm:w-auto"
+                      className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white rounded-md disabled:bg-slate-300 dark:disabled:bg-slate-600 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-[12px] font-medium transition-all duration-200 w-full sm:w-auto"
                       aria-label="Next page"
                     >
                       Next

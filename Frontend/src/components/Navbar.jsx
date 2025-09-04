@@ -94,14 +94,14 @@ function Navbar() {
       await logout();
       navigate('/login');
       toast.success('Signed out successfully', {
-        icon: <CheckCircleIcon className="h-5 w-5 text-green-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        icon: <CheckCircleIcon className="h-5 w-5 text-indigo-600" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     } catch (err) {
       console.error('Logout error:', { error: err.message, stack: err.stack });
       toast.error('Failed to sign out', {
         icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     }
   };
@@ -110,15 +110,15 @@ function Navbar() {
     try {
       await markAllAsRead();
       toast.success('Notifications cleared', {
-        icon: <CheckCircleIcon className="h-5 w-5 text-green-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        icon: <CheckCircleIcon className="h-5 w-5 text-indigo-600" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       fetchNotificationCounter();
     } catch (err) {
       console.error('Error clearing notifications:', { error: err.message, stack: err.stack });
       toast.error('Failed to clear notifications', {
         icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     }
   };
@@ -133,7 +133,7 @@ function Navbar() {
           console.error('Error fetching notifications:', { error: err.message, stack: err.stack });
           toast.error('Failed to load notifications', {
             icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-            style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+            style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
           });
         });
       }
@@ -147,7 +147,7 @@ function Navbar() {
         console.error('Error fetching notification counter:', { error: err.message, stack: err.stack });
         toast.error('Failed to fetch notification count', {
           icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-          style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+          style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
         });
       });
     }
@@ -184,7 +184,7 @@ function Navbar() {
         console.error('Error updating notification status:', { error: err.message, stack: err.stack });
         toast.error('Failed to update notification', {
           icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-          style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+          style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
         });
       }
     }
@@ -198,15 +198,15 @@ function Navbar() {
     try {
       await markAllAsRead();
       toast.success('All notifications marked as read', {
-        icon: <CheckCircleIcon className="h-5 w-5 text-green-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        icon: <CheckCircleIcon className="h-5 w-5 text-indigo-600" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       fetchNotificationCounter();
     } catch (err) {
       console.error('Error marking all notifications as read:', { error: err.message, stack: err.stack });
       toast.error('Failed to mark all as read', {
         icon: <XCircleIcon className="h-5 w-5 text-red-600" />,
-        style: { background: '#ffffff', color: '#111827', padding: '12px', borderRadius: '8px' },
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     }
   };
@@ -225,7 +225,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg sticky top-0 z-50 transition-all duration-300 font-sans">
+    <nav className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-300 shadow-lg sticky top-0 z-50 transition-all duration-300 font-[Inter] text-[12px]">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -233,12 +233,12 @@ function Navbar() {
           style: {
             fontSize: '14px',
             background: '#ffffff',
-            color: '#111827',
+            color: '#1e293b',
             padding: '12px',
             borderRadius: '8px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           },
-          success: { iconTheme: { primary: '#10B981', secondary: '#fff' } },
+          success: { iconTheme: { primary: '#4f46e5', secondary: '#fff' } },
           error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
         }}
       />
@@ -247,7 +247,7 @@ function Navbar() {
           <div className="flex items-center">
             <Link
               to={user ? '/dashboard' : '/'}
-              className="text-xl sm:text-2xl font-semibold text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 transition-colors duration-200 tracking-tight"
+              className="text-xl sm:text-2xl font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 transition-colors duration-200 tracking-tight"
               aria-label="QRVibe Home"
             >
               QRVibe
@@ -258,16 +258,16 @@ function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
-                className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300"
+                className="flex items-center px-4 py-2 rounded-lg text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                 aria-label={item.name}
               >
-                <item.icon className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400 group-hover:text-pink-600 dark:group-hover:text-pink-400" />
+                <item.icon className="w-5 h-5 mr-2 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
                 {item.name}
               </Link>
             ))}
             <button
               onClick={() => navigate('/demo')}
-              className="flex items-center px-4 py-2 text-[12px] font-medium text-white bg-pink-600 dark:bg-pink-400 hover:bg-pink-700 dark:hover:bg-pink-500 rounded-lg transition-all duration-200 shadow-sm"
+              className="flex items-center px-4 py-2 text-[12px] font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 rounded-lg transition-all duration-200 shadow-md"
               aria-label="Get a Demo"
             >
               <PhoneIcon className="w-5 h-5 mr-2 animate-[ring_1.5s_ease-in-out_infinite]" />
@@ -277,12 +277,12 @@ function Navbar() {
               <div className="relative" ref={managementMenuRef}>
                 <button
                   onClick={() => toggleMenu('management')}
-                  className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300"
+                  className="flex items-center px-4 py-2 rounded-lg text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                   aria-expanded={managementMenuOpen}
                   aria-controls="management-menu"
                   aria-label="Management menu"
                 >
-                  <BriefcaseIcon className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
+                  <BriefcaseIcon className="w-5 h-5 mr-2 text-slate-500 dark:text-slate-400" />
                   Management
                   <ChevronDownIcon
                     className={`ml-2 w-4 h-4 transition-transform duration-300 ${managementMenuOpen ? 'rotate-180' : ''}`}
@@ -291,16 +291,16 @@ function Navbar() {
                 {managementMenuOpen && (
                   <div
                     id="management-menu"
-                    className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden"
+                    className="absolute left-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden"
                   >
                     {navConfig.management.map((item) => (
                       <Link
                         key={item.name}
                         to={item.path}
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                        className="flex items-center px-4 py-3 text-[12px] text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                         aria-label={item.name}
                       >
-                        <item.icon className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
+                        <item.icon className="w-5 h-5 mr-2 text-slate-500 dark:text-slate-400" />
                         {item.name}
                       </Link>
                     ))}
@@ -313,15 +313,15 @@ function Navbar() {
                 <div className="relative" ref={notificationsMenuRef}>
                   <button
                     onClick={() => toggleMenu('notifications')}
-                    className="p-2 rounded-full relative text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="p-2 rounded-full relative text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     aria-expanded={notificationsOpen}
                     aria-controls="notifications-menu"
                     aria-label="Notifications"
                   >
                     <BellIcon className="w-6 h-6" />
                     {NotificationCount > 0 && (
-                      <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-pink-600 dark:bg-pink-400 flex items-center justify-center">
-                        <span className="text-white text-xs font-medium">
+                      <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-indigo-600 dark:bg-indigo-400 flex items-center justify-center">
+                        <span className="text-white text-[10px] font-medium">
                           {Math.min(NotificationCount, 9)}
                           {NotificationCount > 9 ? '+' : ''}
                         </span>
@@ -331,10 +331,10 @@ function Navbar() {
                   {notificationsOpen && (
                     <div
                       id="notifications-menu"
-                      className="absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 max-h-96 overflow-y-auto z-50"
+                      className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 max-h-96 overflow-y-auto z-50"
                     >
-                      <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                        <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
+                        <span className="text-[14px] font-semibold text-slate-900 dark:text-slate-100">
                           Notifications
                         </span>
                         <div className="flex items-center space-x-3">
@@ -342,14 +342,14 @@ function Navbar() {
                             <>
                               <button
                                 onClick={handleMarkAllAsRead}
-                                className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 hover:underline focus:outline-none"
+                                className="text-[12px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 hover:underline focus:outline-none"
                                 aria-label="Mark all notifications as read"
                               >
                                 Mark All as Read
                               </button>
                               <button
                                 onClick={handleClearNotifications}
-                                className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 hover:underline focus:outline-none"
+                                className="text-[12px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 hover:underline focus:outline-none"
                                 aria-label="Clear all notifications"
                               >
                                 Clear All
@@ -364,13 +364,13 @@ function Navbar() {
                         hasMore={hasMore}
                         loader={
                           <div className="p-4 text-center">
-                            <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-pink-600 dark:border-pink-400 mx-auto"></div>
+                            <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-indigo-600 dark:border-indigo-400 mx-auto"></div>
                           </div>
                         }
                         height={300}
                       >
                         {notifications.length === 0 ? (
-                          <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                          <div className="p-4 text-center text-[12px] text-slate-500 dark:text-slate-400">
                             No notifications
                           </div>
                         ) : (
@@ -378,22 +378,22 @@ function Navbar() {
                             <button
                               key={notification.id}
                               onClick={() => handleNotificationClick(notification)}
-                              className={`w-full text-left p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all duration-200 ${
+                              className={`w-full text-left p-4 border-b border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200 ${
                                 notification.isRead ? 'opacity-70' : ''
                               }`}
                               aria-label={`Notification: ${notification.message}`}
                             >
                               <div className="flex items-start">
                                 <div className="flex-1">
-                                  <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                  <p className="text-[12px] text-slate-900 dark:text-slate-100 font-medium">
                                     {notification.message}
                                   </p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
                                     {formatDate(notification.created_at)}
                                   </p>
                                 </div>
                                 {!notification.isRead && (
-                                  <span className="h-2 w-2 rounded-full bg-pink-600 dark:bg-pink-400 mt-1.5 ml-2"></span>
+                                  <span className="h-2 w-2 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-1.5 ml-2"></span>
                                 )}
                               </div>
                             </button>
@@ -406,7 +406,7 @@ function Navbar() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => toggleMenu('user')}
-                    className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="flex items-center px-4 py-2 rounded-lg text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     aria-expanded={userMenuOpen}
                     aria-controls="user-menu"
                     aria-label="User menu"
@@ -415,14 +415,14 @@ function Navbar() {
                       <img
                         src={user.avatar}
                         alt="User avatar"
-                        className="w-8 h-8 rounded-full mr-2 object-cover border border-gray-200 dark:border-gray-600"
+                        className="w-8 h-8 rounded-full mr-2 object-cover border border-slate-200 dark:border-slate-600"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-pink-600 dark:bg-pink-400 text-white flex items-center justify-center mr-2 text-sm font-medium">
+                      <div className="w-8 h-8 rounded-full bg-indigo-600 dark:bg-indigo-400 text-white flex items-center justify-center mr-2 text-[12px] font-medium">
                         {getUserInitials()}
                       </div>
                     )}
-                    <span className="truncate max-w-[140px] text-sm">{user?.name || 'User'}</span>
+                    <span className="truncate max-w-[140px] text-[12px]">{user?.name || 'User'}</span>
                     <ChevronDownIcon
                       className={`ml-2 w-4 h-4 transition-transform duration-300 ${userMenuOpen ? 'rotate-180' : ''}`}
                     />
@@ -430,16 +430,16 @@ function Navbar() {
                   {userMenuOpen && (
                     <div
                       id="user-menu"
-                      className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden"
                     >
                       {navConfig.userMenu.map((item) => (
                         <button
                           key={item.name}
                           onClick={item.action === 'logout' ? handleLogout : () => navigate(item.path)}
-                          className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                          className="flex items-center w-full text-left px-4 py-3 text-[12px] text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                           aria-label={item.name}
                         >
-                          <item.icon className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
+                          <item.icon className="w-5 h-5 mr-2 text-slate-500 dark:text-slate-400" />
                           {item.name}
                         </button>
                       ))}
@@ -452,7 +452,7 @@ function Navbar() {
           <div className="md:hidden flex items-center space-x-2">
             <button
               onClick={() => navigate('/demo')}
-              className="flex items-center px-3 py-1.5 text-[12px] font-medium text-white bg-pink-600 dark:bg-pink-400 hover:bg-pink-700 dark:hover:bg-pink-500 rounded-lg transition-all duration-200 shadow-sm"
+              className="flex items-center px-3 py-1.5 text-[12px] font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 rounded-lg transition-all duration-200 shadow-md"
               aria-label="Get a Demo"
             >
               <PhoneIcon className="w-5 h-5 mr-2 animate-[ring_1.5s_ease-in-out_infinite]" />
@@ -461,13 +461,13 @@ function Navbar() {
             {user && (
               <button
                 onClick={() => toggleMenu('notifications')}
-                className="p-2 rounded-full relative text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="p-2 rounded-full relative text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 aria-label="Notifications"
               >
                 <BellIcon className="w-6 h-6" />
                 {NotificationCount > 0 && (
-                  <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-pink-600 dark:bg-pink-400 flex items-center justify-center">
-                    <span className="text-white text-xs font-medium">
+                  <span className="absolute top-0 right-0 h-5 w-5 rounded-full bg-indigo-600 dark:bg-indigo-400 flex items-center justify-center">
+                    <span className="text-white text-[10px] font-medium">
                       {Math.min(NotificationCount, 9)}
                       {NotificationCount > 9 ? '+' : ''}
                     </span>
@@ -477,7 +477,7 @@ function Navbar() {
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="p-2 rounded-full text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
@@ -486,15 +486,15 @@ function Navbar() {
         </div>
       </div>
       <div
-        className={`md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 shadow-2xl transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
             <Link
               to={user ? '/dashboard' : '/'}
-              className="text-xl font-semibold text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 transition-colors duration-200"
+              className="text-xl font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 transition-colors duration-200"
               aria-label="QRVibe Home"
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -502,7 +502,7 @@ function Navbar() {
             </Link>
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="p-2 rounded-full text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               aria-label="Close mobile menu"
             >
               <XMarkIcon className="w-6 h-6" />
@@ -513,40 +513,40 @@ function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
-                className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                className="flex items-center px-4 py-3 text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                 aria-label={item.name}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <item.icon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                <item.icon className="w-5 h-5 mr-3 text-slate-500 dark:text-slate-400" />
                 {item.name}
               </Link>
             ))}
             {user && isAdmin && (
-              <div className="border-t border-gray-200 dark:border-gray-700">
+              <div className="border-t border-slate-200 dark:border-slate-700">
                 <button
                   onClick={() => setMobileManagementOpen(!mobileManagementOpen)}
-                  className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                  className="flex items-center w-full px-4 py-3 text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                   aria-expanded={mobileManagementOpen}
                   aria-controls="mobile-management-menu"
                   aria-label="Management menu"
                 >
-                  <BriefcaseIcon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                  <BriefcaseIcon className="w-5 h-5 mr-3 text-slate-500 dark:text-slate-400" />
                   Management
                   <ChevronDownIcon
                     className={`ml-auto w-5 h-5 transition-transform duration-300 ${mobileManagementOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
                 {mobileManagementOpen && (
-                  <div id="mobile-management-menu" className="pl-6 bg-gray-50 dark:bg-gray-900">
+                  <div id="mobile-management-menu" className="pl-6 bg-slate-50 dark:bg-slate-800">
                     {navConfig.management.map((item) => (
                       <Link
                         key={item.name}
                         to={item.path}
-                        className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                        className="flex items-center px-4 py-3 text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                         aria-label={item.name}
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <item.icon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                        <item.icon className="w-5 h-5 mr-3 text-slate-500 dark:text-slate-400" />
                         {item.name}
                       </Link>
                     ))}
@@ -555,7 +555,7 @@ function Navbar() {
               </div>
             )}
             {user && (
-              <div className="border-t border-gray-200 dark:border-gray-700">
+              <div className="border-t border-slate-200 dark:border-slate-700">
                 {navConfig.userMenu.map((item) => (
                   <button
                     key={item.name}
@@ -567,10 +567,10 @@ function Navbar() {
                             setMobileMenuOpen(false);
                           }
                     }
-                    className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                    className="flex items-center w-full px-4 py-3 text-[12px] font-medium text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
                     aria-label={item.name}
                   >
-                    <item.icon className="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" />
+                    <item.icon className="w-5 h-5 mr-3 text-slate-500 dark:text-slate-400" />
                     {item.name}
                   </button>
                 ))}
@@ -581,12 +581,12 @@ function Navbar() {
       </div>
       {notificationsOpen && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-md flex items-center justify-center p-4"
+          className="md:hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4"
           ref={notificationsMenuRef}
         >
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 w-full max-w-md max-h-[80vh] overflow-hidden">
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 w-full max-w-md max-h-[80vh] overflow-hidden">
+            <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
+              <span className="text-[14px] font-semibold text-slate-900 dark:text-slate-100">
                 Notifications
               </span>
               <div className="flex items-center space-x-3">
@@ -594,14 +594,14 @@ function Navbar() {
                   <>
                     <button
                       onClick={handleMarkAllAsRead}
-                      className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 hover:underline focus:outline-none"
+                      className="text-[12px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 hover:underline focus:outline-none"
                       aria-label="Mark all notifications as read"
                     >
                       Mark All as Read
                     </button>
                     <button
                       onClick={handleClearNotifications}
-                      className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-500 hover:underline focus:outline-none"
+                      className="text-[12px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-500 hover:underline focus:outline-none"
                       aria-label="Clear all notifications"
                     >
                       Clear All
@@ -610,7 +610,7 @@ function Navbar() {
                 )}
                 <button
                   onClick={() => setNotificationsOpen(false)}
-                  className="p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="p-2 rounded-full text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   aria-label="Close notifications"
                 >
                   <XMarkIcon className="w-5 h-5" />
@@ -623,13 +623,13 @@ function Navbar() {
               hasMore={hasMore}
               loader={
                 <div className="p-4 text-center">
-                  <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-pink-600 dark:border-pink-400 mx-auto"></div>
+                  <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-indigo-600 dark:border-indigo-400 mx-auto"></div>
                 </div>
               }
               height={400}
             >
               {notifications.length === 0 ? (
-                <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                <div className="p-4 text-center text-[12px] text-slate-500 dark:text-slate-400">
                   No notifications
                 </div>
               ) : (
@@ -637,22 +637,22 @@ function Navbar() {
                   <button
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`w-full text-left p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all duration-200 ${
+                    className={`w-full text-left p-4 border-b border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200 ${
                       notification.isRead ? 'opacity-70' : ''
                     }`}
                     aria-label={`Notification: ${notification.message}`}
                   >
                     <div className="flex items-start">
                       <div className="flex-1">
-                        <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                        <p className="text-[12px] text-slate-900 dark:text-slate-100 font-medium">
                           {notification.message}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
                           {formatDate(notification.created_at)}
                         </p>
                       </div>
                       {!notification.isRead && (
-                        <span className="h-2 w-2 rounded-full bg-pink-600 dark:bg-pink-400 mt-1.5 ml-2"></span>
+                        <span className="h-2 w-2 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-1.5 ml-2"></span>
                       )}
                     </div>
                   </button>
@@ -678,4 +678,5 @@ function Navbar() {
     </nav>
   );
 }
+
 export default Navbar;

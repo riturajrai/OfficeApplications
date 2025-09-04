@@ -56,6 +56,7 @@ function Login() {
       setError(errorMsg);
       toast.error(errorMsg, {
         icon: <XCircleIcon className="h-4 w-4 text-red-500" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       return;
     }
@@ -65,6 +66,7 @@ function Login() {
       setError(errorMsg);
       toast.error(errorMsg, {
         icon: <XCircleIcon className="h-4 w-4 text-red-500" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       return;
     }
@@ -75,7 +77,8 @@ function Login() {
       const from = location.state?.from?.pathname || '/dashboard';
       navigate(from, { replace: true });
       toast.success('Logged in successfully!', {
-        icon: <CheckCircleIcon className="h-4 w-4 text-green-500" />,
+        icon: <CheckCircleIcon className="h-4 w-4 text-indigo-600" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     } catch (err) {
       const errorMsg =
@@ -85,6 +88,7 @@ function Login() {
       setError(errorMsg);
       toast.error(errorMsg, {
         icon: <XCircleIcon className="h-4 w-4 text-red-500" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     } finally {
       setLoading(false);
@@ -103,6 +107,7 @@ function Login() {
       setForgotError(errorMsg);
       toast.error(errorMsg, {
         icon: <XCircleIcon className="h-4 w-4 text-red-500" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       return;
     }
@@ -111,7 +116,8 @@ function Login() {
     try {
       await axios.post(`${API_URL}/auth/forgot-password`, { email: forgotEmail.toLowerCase() });
       toast.success('Verification code sent to your email!', {
-        icon: <CheckCircleIcon className="h-4 w-4 text-green-500" />,
+        icon: <CheckCircleIcon className="h-4 w-4 text-indigo-600" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
       setTimeout(() => {
         navigate(`/reset-password?email=${encodeURIComponent(forgotEmail)}`);
@@ -126,6 +132,7 @@ function Login() {
       setForgotError(errorMsg);
       toast.error(errorMsg, {
         icon: <XCircleIcon className="h-4 w-4 text-red-500" />,
+        style: { background: '#ffffff', color: '#1e293b', padding: '12px', borderRadius: '8px' },
       });
     } finally {
       setLoading(false);
@@ -138,30 +145,43 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 sm:p-6 font-roboto text-[12px] antialiased">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 sm:p-6 font-[Inter] text-[12px] antialiased">
       <Toaster
         position="bottom-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            fontSize: '12px',
+            background: '#ffffff',
+            color: '#1e293b',
+            padding: '12px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          },
+          success: { iconTheme: { primary: '#4f46e5', secondary: '#fff' } },
+          error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
+        }}
       />
-      <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col lg:flex-row">
-        <div className="lg:flex-1 bg-pink-600 p-6 sm:p-8 flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col lg:flex-row">
+        <div className="lg:flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 p-6 sm:p-8 flex items-center justify-center">
           <div className="text-center w-full">
             <div className="w-full max-w-xs mx-auto sm:max-w-sm">
-              <div className="bg-gray-200 dark:bg-gray-700 h-48 sm:h-64 rounded-md flex items-center justify-center">
-                <span className="text-gray-500 dark:text-gray-400 text-[12px]">
+              <div className="bg-slate-200 dark:bg-slate-700 h-48 sm:h-64 rounded-md flex items-center justify-center">
+                <span className="text-slate-500 dark:text-slate-400 text-[12px]">
                   Login Illustration Placeholder
                 </span>
               </div>
             </div>
             <h2 className="text-[14px] font-bold text-white mt-4">Welcome Back!</h2>
-            <p className="text-[12px] text-pink-100 mt-2">
+            <p className="text-[12px] text-indigo-100 dark:text-indigo-200 mt-2">
               Sign in to access your personalized dashboard and features.
             </p>
           </div>
         </div>
         <div className="flex-1 p-6 sm:p-8">
           <div className="text-center mb-6">
-            <h1 className="text-[16px] font-bold text-gray-900 dark:text-white">Sign In</h1>
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2">
+            <h1 className="text-[16px] font-bold text-slate-900 dark:text-slate-100">Sign In</h1>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">
               Enter your credentials to access your account
             </p>
           </div>
@@ -183,20 +203,20 @@ function Login() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1"
               >
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <EnvelopeIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <EnvelopeIcon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                 </div>
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-[12px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                  className="w-full pl-9 pr-3 py-2 text-[12px] rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                   placeholder="Enter your email"
                   required
                   autoComplete="email"
@@ -211,14 +231,14 @@ function Login() {
               <div className="flex items-center justify-between mb-1">
                 <label
                   htmlFor="password"
-                  className="block text-[12px] font-medium text-gray-700 dark:text-gray-300"
+                  className="block text-[12px] font-medium text-slate-700 dark:text-slate-300"
                 >
                   Password
                 </label>
                 <button
                   type="button"
                   onClick={openForgotPasswordModal}
-                  className="text-[12px] text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 hover:underline"
+                  className="text-[12px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline"
                   aria-label="Forgot password"
                 >
                   Forgot password?
@@ -226,14 +246,14 @@ function Login() {
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <LockClosedIcon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                 </div>
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-9 py-2 text-[12px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                  className="w-full pl-9 pr-9 py-2 text-[12px] rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
@@ -244,7 +264,7 @@ function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -256,12 +276,12 @@ function Login() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 rounded"
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-600 rounded"
                 aria-label="Remember me"
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-[12px] text-gray-700 dark:text-gray-300"
+                className="ml-2 block text-[12px] text-slate-700 dark:text-slate-300"
               >
                 Remember me
               </label>
@@ -269,10 +289,10 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2 px-4 rounded-md text-[12px] font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200 flex items-center justify-center ${
+              className={`w-full py-2 px-4 rounded-md text-[12px] font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center ${
                 loading
-                  ? 'bg-pink-400 cursor-not-allowed'
-                  : 'bg-pink-600 hover:bg-pink-700 shadow-sm'
+                  ? 'bg-indigo-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 shadow-sm'
               }`}
               aria-label="Sign in"
             >
@@ -287,11 +307,11 @@ function Login() {
             </button>
           </form>
           <div className="mt-4 text-center">
-            <p className="text-[12px] text-gray-500 dark:text-gray-400">
+            <p className="text-[12px] text-slate-500 dark:text-slate-400">
               Don't have an account?{' '}
               <button
                 onClick={() => navigate('/signup')}
-                className="font-medium text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 hover:underline"
+                className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline transition-colors duration-200"
                 aria-label="Go to signup"
               >
                 Create an account
@@ -302,14 +322,14 @@ function Login() {
       </div>
       {isForgotPasswordOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md w-full max-w-md p-6 animate-in fade-in-50 zoom-in-95 duration-300">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md w-full max-w-md p-6 animate-in fade-in-50 zoom-in-95 duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-[14px] font-semibold text-slate-900 dark:text-slate-100">
                 Reset Password
               </h3>
               <button
                 onClick={() => setIsForgotPasswordOpen(false)}
-                className="p-1 rounded-full text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                className="p-1 rounded-full text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
                 aria-label="Close reset password modal"
               >
                 <XMarkIcon className="h-4 w-4" />
@@ -329,14 +349,14 @@ function Login() {
                 </div>
               </div>
             )}
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-4">
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mb-4">
               Enter your email address to receive a verification code.
             </p>
             <form onSubmit={handleForgotPassword} className="space-y-4" noValidate>
               <div>
                 <label
                   htmlFor="forgot-email"
-                  className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1"
                 >
                   Email Address
                 </label>
@@ -345,7 +365,7 @@ function Login() {
                   type="email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-[12px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                  className="w-full px-3 py-2 text-[12px] rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                   placeholder="Enter your email"
                   required
                   disabled={loading}
@@ -358,7 +378,7 @@ function Login() {
                 <button
                   type="button"
                   onClick={() => setIsForgotPasswordOpen(false)}
-                  className="flex-1 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md text-[12px] font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200"
+                  className="flex-1 py-2 px-4 border border-slate-300 dark:border-slate-600 rounded-md text-[12px] font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                   aria-label="Cancel"
                 >
                   Cancel
@@ -366,10 +386,10 @@ function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`flex-1 py-2 px-4 rounded-md text-[12px] font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200 ${
+                  className={`flex-1 py-2 px-4 rounded-md text-[12px] font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${
                     loading
-                      ? 'bg-pink-400 cursor-not-allowed'
-                      : 'bg-pink-600 hover:bg-pink-700 shadow-sm'
+                      ? 'bg-indigo-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 shadow-sm'
                   }`}
                   aria-label="Send verification code"
                 >
