@@ -440,7 +440,7 @@ export default function QRGenerator() {
                 Form Submission URL
               </label>
               <div className="relative">
-                <input
+                {/* <input
                   id="url"
                   ref={urlInputRef}
                   type="url"
@@ -453,7 +453,7 @@ export default function QRGenerator() {
                   required
                   disabled={qrcodes.length > 0 || formLoading}
                   aria-describedby={isValidUrl ? undefined : 'url-error'}
-                />
+                /> */}
                 {!isValidUrl && (
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <ExclamationTriangleIcon className="h-3.5 w-3.5 text-red-500" />
